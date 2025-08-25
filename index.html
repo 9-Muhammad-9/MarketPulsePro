@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MarketPulse AI - Real-time Market Intelligence</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #1e40af;
+            --accent: #3b82f6;
+            --light: #f3f4f6;
+            --dark: #1f2937;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --card-bg: #ffffff;
+            --body-bg: #f8fafc;
+        }
+
+        .dark-mode {
+            --card-bg: #1e293b;
+            --body-bg: #0f172a;
+            --light: #1e293b;
+            --dark: #f3f4f6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--body-bg);
+            color: var(--dark);
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        header {
+            background: linear-gradient(120deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .logo i {
+            font-size: 2rem;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .theme-toggle {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .last-updated {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .categories {
+            display: flex;
+            overflow-x: auto;
+            gap: 10px;
+            padding: 1rem 0;
+            margin: 1rem 0;
+            scrollbar-width: none;
+        }
+
+        .categories::-webkit-scrollbar {
+            display: none;
+        }
+
+        .category-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            background-color: var(--light);
+            color: var(--dark);
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+
+        .category-btn.active {
+            background: linear-gradient(120deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .category-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin: 2rem 0;
+        }
+
+        .news-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .news-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-category {
+            font-size: 0.85rem;
+            font-weight: 700;
+            padding: 5px 12px;
+            border-radius: 15px;
+            background-color: var(--light);
+        }
+
+        .card-content {
+            padding: 20px;
+        }
+
+        .news-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        .news-summary {
+            color: #64748b;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .ai-analysis {
+            background-color: #f1f5f9;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .analysis-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+
+        .impact {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 15px;
+            font-weight: 600;
+        }
+
+        .impact.up {
+            color: var(--success);
+        }
+
+        .impact.down {
+            color: var(--danger);
+        }
+
+        .impact.neutral {
+            color: var(--warning);
+        }
+
+        .card-footer {
+            padding: 15px 20px;
+            background-color: #f8fafc;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid rgba(0, 0, 0, 0.08);
+        }
+
+        .news-source {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        .news-date {
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 300px;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        footer {
+            background: linear-gradient(120deg, var(--primary), var(--secondary));
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 3rem;
+        }
+
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .disclaimer {
+            max-width: 800px;
+            margin: 0 auto;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .news-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .categories {
+                padding: 0.5rem 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-chart-line"></i>
+                    <h1>MarketPulse AI</h1>
+                </div>
+                <div class="controls">
+                    <div class="last-updated">
+                        <i class="fas fa-sync-alt"></i>
+                        Updated: <span id="update-time">Just now</span>
+                    </div>
+                    <button class="theme-toggle" id="theme-toggle">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="categories">
+            <button class="category-btn active" data-category="all">All Markets</button>
+            <button class="category-btn" data-category="crypto">Crypto</button>
+            <button class="category-btn" data-category="stock">Stocks</button>
+            <button class="category-btn" data-category="forex">Forex</button>
+            <button class="category-btn" data-category="oil">Oil & Gas</button>
+            <button class="category-btn" data-category="commodity">Commodities</button>
+        </div>
+
+        <div class="news-grid" id="news-container">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>Fetching latest market news and analysis...</p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <p>MarketPulse AI - Real-time Market Intelligence</p>
+                <p class="disclaimer">
+                    Disclaimer: This information is for educational purposes only and does not constitute financial advice. 
+                    Always do your own research before making any investment decisions.
+                </p>
+                <p>© 2023 MarketPulse AI. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // DOM elements
+        const themeToggle = document.getElementById('theme-toggle');
+        const newsContainer = document.getElementById('news-container');
+        const categoryButtons = document.querySelectorAll('.category-btn');
+        const updateTimeElement = document.getElementById('update-time');
+
+        // Theme toggle functionality
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            if (document.body.classList.contains('dark-mode')) {
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            } else {
+                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+            }
+        });
+
+        // Category filter functionality
+        categoryButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                categoryButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                const category = button.getAttribute('data-category');
+                filterNewsByCategory(category);
+            });
+        });
+
+        function filterNewsByCategory(category) {
+            const newsCards = document.querySelectorAll('.news-card');
+            newsCards.forEach(card => {
+                if (category === 'all' || card.getAttribute('data-category') === category) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Update time
+        function updateTime() {
+            const now = new Date();
+            updateTimeElement.textContent = now.toLocaleTimeString();
+        }
+
+        setInterval(updateTime, 60000);
+        updateTime();
+
+        // Sample market data - In a real implementation, this would come from API calls
+        const marketNews = [
+            {
+                id: 1,
+                title: "Fed Indicates Potential Rate Pause in September Meeting",
+                summary: "The Federal Reserve signaled a potential pause in interest rate hikes during its September meeting, citing easing inflation pressures.",
+                analysis: "The potential pause in rate hikes is generally positive for risk assets like stocks and crypto as it reduces borrowing costs and increases liquidity.",
+                impact: "up",
+                category: "stock",
+                source: "Bloomberg",
+                date: "2 hours ago"
+            },
+            {
+                id: 2,
+                title: "Bitcoin Surges Past $45,000 Amid Institutional Adoption News",
+                summary: "Bitcoin broke through the $45,000 resistance level after a major pension fund announced allocation to cryptocurrency investments.",
+                analysis: "Institutional adoption continues to drive Bitcoin's value upward. Breaking the $45K resistance level could open path to $50K.",
+                impact: "up",
+                category: "crypto",
+                source: "CoinDesk",
+                date: "4 hours ago"
+            },
+            {
+                id: 3,
+                title: "OPEC+ Announces Production Cuts, Oil Prices Jump 3%",
+                summary: "OPEC+ members agreed to extend production cuts through next quarter, reducing global supply by 1.5 million barrels per day.",
+                analysis: "Production cuts typically lead to higher oil prices in the short term. Energy stocks may benefit while transportation sectors could face headwinds.",
+                impact: "up",
+                category: "oil",
+                source: "Reuters",
+                date: "5 hours ago"
+            },
+            {
+                id: 4,
+                title: "USD Strengthens Against Major Currencies on Economic Data",
+                summary: "The US dollar index rose 0.8% after strong employment data suggested resilience in the US economy.",
+                analysis: "A stronger dollar typically pressures commodities and emerging market currencies. EUR/USD and GBP/USD may test support levels.",
+                impact: "down",
+                category: "forex",
+                source: "Financial Times",
+                date: "6 hours ago"
+            },
+            {
+                id: 5,
+                title: "Supply Chain Disruptions Impact Global Copper Supplies",
+                summary: "Labor strikes at major Chilean copper mines have disrupted supplies, pushing copper prices to 3-month highs.",
+                analysis: "Copper supply constraints could benefit mining stocks but increase costs for industries reliant on the metal like construction and electronics.",
+                impact: "up",
+                category: "commodity",
+                source: "Wall Street Journal",
+                date: "8 hours ago"
+            },
+            {
+                id: 6,
+                title: "Regulatory Concerns Weigh on Tech Stocks",
+                summary: "Nasdaq fell 1.5% as renewed regulatory concerns emerged around big tech companies' market dominance.",
+                analysis: "Increased regulatory scrutiny often creates short-term headwinds for tech stocks, though long-term impact varies by company.",
+                impact: "down",
+                category: "stock",
+                source: "CNBC",
+                date: "9 hours ago"
+            }
+        ];
+
+        // Display news on page load
+        function displayNews() {
+            newsContainer.innerHTML = '';
+            
+            marketNews.forEach(news => {
+                const newsCard = document.createElement('div');
+                newsCard.className = 'news-card';
+                newsCard.setAttribute('data-category', news.category);
+                
+                let impactText = '';
+                let impactClass = '';
+                
+                if (news.impact === 'up') {
+                    impactText = 'Market likely to rise';
+                    impactClass = 'up';
+                } else if (news.impact === 'down') {
+                    impactText = 'Market likely to decline';
+                    impactClass = 'down';
+                } else {
+                    impactText = 'Neutral market impact';
+                    impactClass = 'neutral';
+                }
+                
+                newsCard.innerHTML = `
+                    <div class="card-header">
+                        <span class="card-category">${news.category.toUpperCase()}</span>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="news-title">${news.title}</h3>
+                        <p class="news-summary">${news.summary}</p>
+                        <div class="ai-analysis">
+                            <div class="analysis-title">
+                                <i class="fas fa-brain"></i>
+                                AI Analysis
+                            </div>
+                            <p>${news.analysis}</p>
+                            <div class="impact ${impactClass}">
+                                <i class="fas ${news.impact === 'up' ? 'fa-arrow-up' : news.impact === 'down' ? 'fa-arrow-down' : 'fa-minus'}"></i>
+                                ${impactText}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="news-source">
+                            <i class="fas fa-newspaper"></i>
+                            ${news.source}
+                        </div>
+                        <div class="news-date">
+                            <i class="far fa-clock"></i>
+                            ${news.date}
+                        </div>
+                    </div>
+                `;
+                
+                newsContainer.appendChild(newsCard);
+            });
+        }
+
+        // Simulate API loading
+        setTimeout(() => {
+            displayNews();
+        }, 2000);
+
+        // In a real implementation, you would set up Netlify functions to fetch real news data
+        // from APIs like NewsAPI, Alpha Vantage, or CryptoCompare and process it with AI analysis
+
+        // Example of how you might set up a Netlify function to get news:
+        /*
+        async function getMarketNews() {
+            try {
+                const response = await fetch('/.netlify/functions/getNews');
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error('Error fetching news:', error);
+                return [];
+            }
+        }
+        */
+    </script>
+</body>
+</html>
